@@ -3,6 +3,7 @@ db.sqlite
 
 # tsc
 dist
+public
 
 # npm
 node_modules
