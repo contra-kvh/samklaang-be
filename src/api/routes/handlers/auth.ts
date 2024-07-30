@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
-import { logger } from '../../utils/logger';
-import { addUser, verifyPassword } from '../../database/users';
-import { LoginRequest, RegisterRequest } from '../../models/requests';
+import { logger } from '@/utils/logger';
+import { addUser, verifyPassword } from '@/database/users';
+import { LoginRequest, RegisterRequest } from '@/models/requests';
 
 
 dotenv.config()

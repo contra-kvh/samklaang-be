@@ -1,8 +1,8 @@
 import { v4 as uuid4 } from 'uuid';
 import db from '.'
 import bcrypt from 'bcrypt';
-import { LoginRequest } from '../models/requests';
-import { UserResponse } from '../models/responses';
+import { LoginRequest } from '@/models/requests';
+import { UserResponse } from '@/models/responses';
 
 export const addUser = (email: string, name: string, designation: string, password: string): Promise<void> => {
   return new Promise((resolve, reject) => {

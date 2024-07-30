@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { decryptMessage, encryptMessage } from '../../utils/crypto';
+import { decryptMessage, encryptMessage } from '@/utils/crypto';
 
 export const encryptHandler = async (req: Request, res: Response) => {
   try {
