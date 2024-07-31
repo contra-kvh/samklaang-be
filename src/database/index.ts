@@ -18,7 +18,7 @@ db.serialize(() => {
     uuid TEXT PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
     designation TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
+    email TEXT UNIQUE NOT NULL UNIQUE,
     pwhash TEXT NOT NULL,
     created_at DATETIME NOT NULL
   )`, (err: Error | null) => {
