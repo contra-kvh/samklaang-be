@@ -10,13 +10,16 @@ logger.info(`using ${DB_PATH} for the sqlite3 database`)
 const db = new sqlite3.Database(DB_PATH)
 
 db.serialize(() => {
-  // create Users Table if needed
-  db.run(`CREATE TABLE Users (
-    uuid    TEXT PRIMARY KEY NOT NULL,
-    name    TEXT NOT NULL,
+// Enable foreign key support
+  db.run(`PRAGMA foreign_keys = ON;`);
+
+  // Create Users Table if needed
+  db.run(`CREATE TABLE IF NOT EXISTS Users (
+    uuid TEXT PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
     designation TEXT NOT NULL,
-    email   TEXT NOT NULL,
-    pwhash  TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    pwhash TEXT NOT NULL,
     created_at DATETIME NOT NULL
   )`, (err: Error | null) => {
     if (err) {
@@ -26,34 +29,30 @@ db.serialize(() => {
     }
   });
 
-  // create Participants Table if needed
-  db.run(`CREATE TABLE IF NOT EXISTS Participants (
-    uuid  TEXT PRIMARY KEY NOT NULL,
-    email TEXT NOT NULL,
-    name  TEXT NOT NULL,
-    org_name TEXT NOT NULL,
-    designation TEXT NOT NULL,
-    verified BOOLEAN NOT NULL DEFAULT 0
+  // Create MailingLists Table if needed
+  db.run(`CREATE TABLE IF NOT EXISTS MailingLists (
+    slug TEXT PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT
   )`, (err: Error | null) => {
     if (err) {
-      console.error("Error creating Participants table:", err.message);
+      console.error("Error creating MailingLists table:", err.message);
     } else {
-      console.log("Participants table created or already exists.");
+      console.log("MailingLists table created or already exists.");
     }
   });
-  db.run(`CREATE TABLE Meetings (
-    uuid TEXT PRIMARY KEY NOT NULL,
-    creator_uuid TEXT NOT NULL,
-    agenda TEXT NOT NULL,
-    start_time DATETIME NOT NULL,
-    join_code TEXT NOT NULL,
-    is_recorded BOOLEAN,
-    created_at DATETIME NOT NULL
+
+  // Create MailingListEntries Table if needed
+  db.run(`CREATE TABLE IF NOT EXISTS MailingListEntries (
+    list_slug TEXT NOT NULL,
+    email TEXT NOT NULL,
+    PRIMARY KEY (list_slug, email),
+    FOREIGN KEY (list_slug) REFERENCES MailingLists(slug) ON DELETE CASCADE
   )`, (err: Error | null) => {
     if (err) {
-      console.error("Error creating Meetings table:", err.message);
+      console.error("Error creating MailingListEntries table:", err.message);
     } else {
-      console.log("Meetings table created or already exists.");
+      console.log("MailingListEntries table created or already exists.");
     }
   });
 });

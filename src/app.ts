@@ -1,4 +1,4 @@
-import express, {Express, Request, Response} from 'express';
+import express, {Express, Request, Response, Router} from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { testsRouter, authRouter, meetRouter, usersRouter } from './api';
@@ -20,9 +20,12 @@ app.get("/echo", (req: Request, res: Response) => {
   res.status(200).send(req.body);
 })
 
-app.use("/tests", testsRouter);
-app.use("/auth", authRouter);
-app.use("/meet", meetRouter);
-app.use("/users", usersRouter);
+const api = Router()
+api.use("/tests", testsRouter);
+api.use("/auth", authRouter);
+api.use("/meet", meetRouter);
+api.use("/users", usersRouter);
 
+
+app.use("/api", api)
 export default app;

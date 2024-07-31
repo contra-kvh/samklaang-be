@@ -4,11 +4,11 @@ import bcrypt from 'bcrypt';
 import { logger } from '@/utils/logger';
 import { addUser, verifyPassword } from '@/database/users';
 import { LoginRequest, RegisterRequest } from '@/models/requests';
+import { getUserToken } from '@/utils/auth';
 
 
 dotenv.config()
 const SALT_ROUNDS: number = Number((process.env.SALT_ROUNDS || 10));
-
 
 export const login = async (req: Request, res: Response) => {
   const loginRequest: LoginRequest = req.body;
@@ -17,7 +17,8 @@ export const login = async (req: Request, res: Response) => {
     const user = await verifyPassword(loginRequest);
 
     if (user) {
-      res.status(200).json(user);
+      const token = await getUserToken(user);
+      res.status(200).json({token: token});
     } else {
       res.status(401).send('Invalid email or password');
     }
@@ -35,8 +36,10 @@ export const register = async (req: Request, res: Response) => {
   try {
     const salt = await bcrypt.genSalt(SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(params.password, salt);
-    await addUser(params.email, params.name, params.designation, hashedPassword);
-    res.status(201).send("User created successfully");
+    params.password = hashedPassword
+    const resp = await addUser(params);
+    const token = await getUserToken(resp);
+    res.status(201).json({token: token});
   } catch (err: any) {
     if (err instanceof Error) {
       logger.error(`Error during registration: ${err.message}`);
