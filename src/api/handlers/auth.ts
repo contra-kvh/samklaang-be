@@ -16,6 +16,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const register = async (req: Request, res: Response) => {
   const body: RegisterRequest = req.body
+  console.log(body)
   try {
     const token = await registerUser(body.firstName, body.lastName, body.designation, body.email, body.password)
     res.status(201).json({token: token})
