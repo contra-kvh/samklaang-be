@@ -1,8 +1,13 @@
-import { EntityManager, MikroORM } from "@mikro-orm/sqlite"
+import { MikroORM } from '@mikro-orm/sqlite';
+import { userSetEM } from './users.js';
+import { meetingSetEM } from './meetings.js';
 
-const orm = await MikroORM.init()
-await orm.schema.refreshDatabase()
+var orm: MikroORM|undefined = undefined
 
-export const getEMFork = (): EntityManager => {
-  return orm.em.fork()
+export const bootstrapDB = async () => {
+  orm = await MikroORM.init()
+  if(!orm.schema.ensureDatabase())
+    orm.schema.refreshDatabase()
+  userSetEM(orm.em.fork())
+  meetingSetEM(orm.em.fork())
 }

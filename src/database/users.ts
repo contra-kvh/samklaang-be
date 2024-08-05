@@ -1,9 +1,20 @@
 import { NotFoundError, UniqueConstraintViolationException } from "@mikro-orm/core";
 import { User } from "./entities/user/user.entity.js";
-import { getEMFork } from "./index.js";
 import { decryptToken, encryptPayload } from "../util/crypto.js";
+import { EntityManager } from "@mikro-orm/sqlite";
 
-const em = getEMFork()
+var em: EntityManager
+
+export const userSetEM = (_em: EntityManager) => {
+  em = _em
+}
+
+export class EmailAlreadyInUseError extends Error {
+  constructor(message: string = 'Email already in use') {
+    super(message);
+    this.name = 'EmailAlreadyInUseError';
+  }
+}
 
 export const registerUser = async (firstName: string, lastName: string, designation: string, email: string, password: string): Promise<string|undefined> => {
   const user = em.create(User, {
@@ -23,8 +34,9 @@ export const registerUser = async (firstName: string, lastName: string, designat
       return token
   } catch (e) {
     if (e instanceof UniqueConstraintViolationException) {
-      throw new Error(`email already linked to an account, consider signing in`)
+      throw new EmailAlreadyInUseError()
     } else if (e instanceof Error){
+      console.error(`error during registration: ${e.message}`)
       throw new Error(e.message)
     }
   }
