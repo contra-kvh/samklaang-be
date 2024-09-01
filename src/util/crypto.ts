@@ -26,7 +26,7 @@ export const decryptToken = (token: string): string | undefined => {
   try {
     const payload = decrypt(local_key, token)
     const str = JSON.stringify(payload.payload)
-    console.log(payload)
+    // console.log(payload)
     return str
   } catch (e) {
     if (e instanceof Error) {

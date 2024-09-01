@@ -6,7 +6,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   if(!token){
     return res.status(401).json({message: 'authorization token missing on a auth-only route'})
   }
-  console.log(`auth header: ${token}`)
+  // console.log(`auth header: ${token}`)
   token = token.split(' ')[1]
   try {
     const payload = JSON.parse(decryptToken(token!)!) as {uuid: string}
