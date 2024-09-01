@@ -17,6 +17,16 @@ export const RegisterRequestSchema = z.object({
 });
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 
+// User Registration Request Schema
+export const PatchUserRequestSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  designation: z.string().optional(),
+  email: z.string().optional(),
+  bio: z.string().optional(),
+});
+export type PatchUserRequestSchema = z.infer<typeof PatchUserRequestSchema>;
+
 // Participant Registration Request Schema
 export const RegisterParticipantRequestSchema = z.object({
   email: z.string().email("Invalid email address"),

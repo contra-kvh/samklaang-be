@@ -2,6 +2,7 @@ import { NotFoundError, UniqueConstraintViolationException } from "@mikro-orm/co
 import { User } from "./entities/user/user.entity.js";
 import { decryptToken, encryptPayload } from "../util/crypto.js";
 import { EntityManager } from "@mikro-orm/sqlite";
+import { PatchUserRequestSchema } from "../api/models/requests.js";
 
 var em: EntityManager
 
@@ -67,5 +68,20 @@ export const authenticateUser = async (email: string, password: string): Promise
 
 export const getUserFromToken = async (token: string): Promise<User|undefined> => {
   const user: User = JSON.parse(decryptToken(token)!)
+  return user
+}
+
+export const findUserByUUID = async (uuid: string): Promise<User | null> => {
+  return await em.findOne(User, { uuid: uuid });
+};
+
+export const updateUserByUUID = async (uuid: string, new_data: PatchUserRequestSchema): Promise<User | null> => {
+  const user = await em.findOne(User, { uuid: uuid });
+  if (!user) return null;
+  
+  Object.assign(user, new_data);
+  await em.flush();
+
+  console.log(`updated user:\n${JSON.stringify(user)}`)
   return user
 }
